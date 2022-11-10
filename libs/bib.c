@@ -293,8 +293,8 @@ Node *deleteNode(Node *head, int id)
 }
 void *printPokemon(Node *head, int id)
 {
-    Pokemon *aux = (Pokemon *)malloc(sizeof(Pokemon));
-    aux = head->data;
+    // Pokemon *aux = (Pokemon *)malloc(sizeof(Pokemon));
+    // aux = head->data;
     // while (aux->id != id)
     // {
     //     if (aux == NULL)
@@ -306,9 +306,9 @@ void *printPokemon(Node *head, int id)
     // }
     // printf("Pokemon %s", aux->name);
 }
-void *insertPokemon(Node *head, int idPokemon)
+void *insertPokemon() // Node *head, int idPokemon
 {
-    FILE *fp = fopen("/home/ramon/Documents/UFPEL/Eng. Comp 3º Semestre/AED1/TRABALHO FINAL/libs/Pokemon.csv", "r");
+    FILE *fp = fopen("Pokemon.csv", "r");
 
     if (!fp)
         printf("Can't open file\n");
@@ -330,7 +330,7 @@ void *insertPokemon(Node *head, int idPokemon)
 
             if (row == 1)
                 continue;
-            char *value = strtok(buffer, ", ");
+            char *value = zstrtok(buffer, ", ");
 
             while (value)
             {
@@ -389,7 +389,7 @@ void *insertPokemon(Node *head, int idPokemon)
                     printf("\nGeneration:");
                 }
                 printf("%s", value);
-                value = strtok(NULL, ", ");
+                value = zstrtok(NULL, ", ");
                 column++;
             }
 

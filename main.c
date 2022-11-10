@@ -19,7 +19,7 @@ int main()
 
     pokedex = deleteNode(pokedex, 10);
 
-    printAVL(pokedex, 0);
-    // printPokemon(pokedex, 0);
+    // printAVL(pokedex, 0);
+    insertPokemon();
     return 0;
 }

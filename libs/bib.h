@@ -35,5 +35,5 @@ Node *insert(Node *node, int key);
 void printAVL(Node *nodo, int tab);
 Node *min(Node *head);
 Node *deleteNode(Node *head, int id);
-void *insertPokemon(Node *head, int idPokemon);
+void *insertPokemon();
 void *printPokemon(Node *head, int id);
