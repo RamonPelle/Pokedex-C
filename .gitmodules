@@ -1,0 +1,3 @@
+[submodule "libs/zString"]
+	path = libs/zString
+	url = https://github.com/fnoyanisi/zString
