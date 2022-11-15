@@ -3,6 +3,7 @@
 #include <string.h>
 #include "bib.h"
 #include "zString/src/zstrtok.h"
+
 int heightOfTree(Node *head)
 {
     if (head == NULL)
@@ -26,90 +27,42 @@ Pokemon *createPokemon(int id)
 {
     FILE *fp = fopen("Pokemon.csv", "r");
     Pokemon *pokemon = (Pokemon *)malloc(sizeof(Pokemon));
-    if (!fp)
-        printf("Can't open file\n");
-    else
-    {
-        char buffer[1076];
-        int row = 0;
-        int column = 0;
 
-        while (fgets(buffer, 1076, fp))
-        {
-            column = 0;
-            row++;
-            if (row == 1)
-                continue;
+    char teste[6][30];
+    int i = 0, flag = 0;
+    char row[152];
+    char *token;
 
-            char *value = zstrtok(buffer, ", "); // dividindo os dados
-            // while (value)
-            // {
-            //     if (column == 0 && *value == id)
-            //     {
-            //         if (column == 1)
-            //         {
-            //             strcpy(pokemon->name, value);
-            //         }
-            //         if (column == 2)
-            //         {
-            //             strcpy(pokemon->form, value);
-            //         }
+    while ((feof(fp) != 1) && (flag == 0))
+    { // FLAG PRA QUANDO ACHAR O VALOR IGUAL DE ID NO ARQUIVO
+        fgets(row, 152, fp);
+        token = strtok(row, ",");
+        strcpy(teste[0], token);
 
-            //         if (column == 4)
-            //         {
-            //             strcpy(pokemon->type1, value);
-            //         }
-            //         if (column == 5)
-            //         {
-            //             strcpy(pokemon->type2, value);
-            //         }
-            //         if (column == 6)
-            //         {
-            //             pokemon->total = strtol(value, (char **)NULL, 10);
-            //         }
-            //         if (column == 7)
-            //         {
-            //             pokemon->hp = strtol(value, (char **)NULL, 10);
-            //         }
-            //         if (column == 8)
-            //         {
-            //             pokemon->attack = strtol(value, (char **)NULL, 10);
-            //         }
-            //         if (column == 9)
-
-            //             pokemon->defense = strtol(value, (char **)NULL, 10);
-
-            //         if (column == 10)
-            //         {
-            //             pokemon->spAttack = strtol(value, (char **)NULL, 10);
-            //         }
-            //         if (column == 11)
-            //         {
-            //             pokemon->spDefense = strtol(value, (char **)NULL, 10);
-            //         }
-            //         if (column == 12)
-            //         {
-            //             pokemon->speed = strtol(value, (char **)NULL, 10);
-            //         }
-            //         if (column == 13)
-            //         {
-            //             pokemon->gen = strtol(value, (char **)NULL, 10);
-            //         }
-            //     }
-
-            //     value = zstrtok(NULL, ", ");
-            //     column++;
-            // }
-
-            printf("\n");
+        if (atoi(teste[0]) == id && atoi(teste[0]) != 0)
+        { // TESTE != 0 PARA N PEGAR PRIMEIRA LINHA Q é "NAME TYPE1 ETC"
+            flag = 1;
+            i = 1;
+            while (i < 5)
+            {
+                token = strtok(NULL, ",");
+                strcpy(teste[i], token);
+                fflush(stdout);
+                i++;
+            }
         }
-
-        // Close the file
-        fclose(fp);
-
-        pokemon->next = NULL;
     }
-    return pokemon;
+    fclose(fp);
+    if (flag == 1)
+    {
+        pokemon->id = atoi(teste[0]);
+        strcpy(pokemon->name, teste[1]);
+        strcpy(pokemon->type1, teste[2]);
+        strcpy(pokemon->type2, teste[3]);
+        pokemon->total = atoi(teste[4]);
+        return (pokemon);
+    }
+    return NULL; // SE N ACHAR ID RETORNA NULL?
 }
 Node *createNode(int id)
 {
@@ -157,60 +110,60 @@ int balancingFactor(Node *head)
         return 0;
     return heightOfTree(head->left) - heightOfTree(head->right);
 }
-Node *insert(Node *node, int id)
+Node *insert(Node *head, int id)
 {
-    if (node == NULL)
+    if (id <= 0 || id > 151) // n existe no arquivo
+        return head;
+    if (head == NULL)
         return (createNode(id));
 
-    if (id < node->id)
-        node->left = insert(node->left, id);
-    else if (id > node->id)
-        node->right = insert(node->right, id);
+    if (id < head->id)
+        head->left = insert(head->left, id);
+    else if (id > head->id)
+        head->right = insert(head->right, id);
     else
-        return node; // nao atualiza a arvore, valores repetidos
+        return head; // nao atualiza a arvore, valores repetidos
 
     // atualiza a altura
-    node->height = heightOfTree(node);
+    head->height = heightOfTree(head);
 
     // saber se esta balanceada
-    int balance = balancingFactor(node);
+    int balance = balancingFactor(head);
 
     // esquerdona
-    if (balance > 1 && id < node->left->id)
-        return rightRotation(node);
+    if (balance > 1 && id < head->left->id)
+        return rightRotation(head);
 
     // direitona
-    if (balance < -1 && id > node->right->id)
-        return leftRotation(node);
+    if (balance < -1 && id > head->right->id)
+        return leftRotation(head);
 
     // esquerda direita
-    if (balance > 1 && id > node->left->id)
+    if (balance > 1 && id > head->left->id)
     {
-        node->left = leftRotation(node->left);
-        return rightRotation(node);
+        head->left = leftRotation(head->left);
+        return rightRotation(head);
     }
 
     // direita esquerda
-    if (balance < -1 && id < node->right->id)
+    if (balance < -1 && id < head->right->id)
     {
-        node->right = rightRotation(node->right);
-        return leftRotation(node);
+        head->right = rightRotation(head->right);
+        return leftRotation(head);
     }
 
-    return node;
+    return head;
 }
-void printAVL(Node *nodo, int tab)
+void printAVL(Node *node, int tab)
 {
     for (int i = 0; i < tab; i++)
-    {
         printf("-");
-    }
-    if (nodo)
+    if (node)
     {
-        printf("%d\n", nodo->id);
-        printAVL(nodo->left, tab + 2);
+        printf("%d\n", node->id);
+        printAVL(node->left, tab + 2);
         printf("\n");
-        printAVL(nodo->right, tab + 2);
+        printAVL(node->right, tab + 2);
     }
     else
         printf("*");
@@ -229,14 +182,10 @@ Node *deleteNode(Node *head, int id)
         if ((head->left == NULL) || (head->right == NULL))
         {
             Node *aux = (Node *)malloc(sizeof(Node));
-            if (head->left) // aux = head->left ? head->left : head->right ?? !!!!!!!!!!!!!!!!!!!!!########################!#!#!#!!##!#!#!
-            {
+            if (head->left)
                 aux = head->left;
-            }
             else
-            {
                 aux = head->right;
-            }
 
             // 0 filho
             if (aux == NULL)
@@ -293,110 +242,54 @@ Node *deleteNode(Node *head, int id)
 }
 void *printPokemon(Node *head, int id)
 {
-    // Pokemon *aux = (Pokemon *)malloc(sizeof(Pokemon));
-    // aux = head->data;
-    // while (aux->id != id)
-    // {
-    //     if (aux == NULL)
-    //     {
-    //         printf("\nPokemon nao foi insrido\n.");
-    //         break;
-    //     }
-    //     aux->next;
-    // }
-    // printf("Pokemon %s", aux->name);
-}
-void *insertPokemon() // Node *head, int idPokemon
-{
-    FILE *fp = fopen("Pokemon.csv", "r");
+    Node *aux = buscaID(head, id);
 
-    if (!fp)
-        printf("Can't open file\n");
-
+    if (aux)
+        printf("ID: %d\nPokemon: %s\nTipo 1: %s\nTipo 2: %s\nTotal: %d\n", aux->data->id, aux->data->name, aux->data->type1, aux->data->type2, aux->data->total);
     else
+        printf("Pokemon inexistente.\n");
+}
+void order(Node *head)
+{
+    if (head == NULL)
+        return;
+    order(head->left);
+    printf("%d ", head->id);
+    order(head->right);
+}
+Node *edit(Node *head, int id)
+{
+    Node *aux = buscaID(head, id);
+    if (aux)
     {
-        // Here we have taken size of
-        // array 1024 you can modify it
-        char buffer[1024];
-
-        int row = 0;
-        int column = 0;
-
-        while (fgets(buffer,
-                     1024, fp))
-        {
-            column = 0;
-            row++;
-
-            if (row == 1)
-                continue;
-            char *value = zstrtok(buffer, ", ");
-
-            while (value)
-            {
-                if (column == 0)
-                {
-                    printf("ID:");
-                }
-
-                if (column == 1)
-                {
-                    printf("\nName:");
-                }
-                if (column == 2)
-                {
-                    printf("\nForm:");
-                }
-
-                if (column == 4)
-                {
-                    printf("\nType 1:");
-                }
-                if (column == 5)
-                {
-                    printf("\nType 2:");
-                }
-                if (column == 6)
-                {
-                    printf("\nTotal:");
-                }
-                if (column == 7)
-                {
-                    printf("\nHP:");
-                }
-                if (column == 8)
-                {
-                    printf("\nAttack:");
-                }
-                if (column == 9)
-
-                    printf("\nDefense:");
-
-                if (column == 10)
-                {
-                    printf("\nSuper Attack:");
-                }
-                if (column == 11)
-                {
-                    printf("\nSuper Defense:");
-                }
-                if (column == 12)
-                {
-                    printf("\nSpeed:");
-                }
-                if (column == 13)
-                {
-                    printf("\nGeneration:");
-                }
-                printf("%s", value);
-                value = zstrtok(NULL, ", ");
-                column++;
-            }
-
-            printf("\n");
-        }
-
-        // Close the file
-        fclose(fp);
+        printf("\nPokemon NOME: ");
+        scanf("%s", aux->data->name);
+        printf("\nPokemon TYPE1: ");
+        scanf("%s", aux->data->type1);
+        printf("\nPokemon TYPE2: ");
+        scanf("%s", aux->data->type2);
+        printf("\nPokemon TOTAL: ");
+        scanf("%d", &aux->data->total);
     }
+    return head;
+}
+Node *buscaID(Node *head, int id)
+{
+    Node *aux = head;
+
+    while (aux && aux->id != id)
+    {
+        if (id > aux->id)
+            aux = aux->right;
+        else
+            aux = aux->left;
+    }
+    return aux;
+}
+int ammountOfNodes(Node *head)
+{
+    if (head == NULL)
+        return 0;
+    else
+        return 1 + ammountOfNodes(head->left) + ammountOfNodes(head->right);
 }

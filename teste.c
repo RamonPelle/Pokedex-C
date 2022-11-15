@@ -1,99 +1,68 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "./libs/zString/src/zstrtok.h"
 int main()
 {
-
-    FILE *fp = fopen("./libs/Pokemon.csv", "r");
-
-    if (!fp)
-        printf("Can't open file\n");
-
-    else
+    typedef struct pokemon
     {
-        // Here we have taken size of
-        // array 1024 you can modify it
-        char buffer[1024];
+        int id;
+        char name[30];
+        char form[30];
+        char type1[15];
+        char type2[15];
+        int total;
+        int hp;
+        int attack;
+        int defense;
+        int spAttack;
+        int spDefense;
+        int speed;
+        int gen;
+        struct pokemon *next;
+    } Pokemon;
+    FILE *fp = fopen("Pokemon.csv", "r");
 
-        int row = 0;
-        int column = 0;
+    char row[152];
+    char *token;
 
-        while (fgets(buffer,
-                     1024, fp))
+    while (feof(fp) != 1)
+    {
+        fgets(row, 152, fp);
+        printf("Row: %s", row);
+
+        token = strtok(row, ",");
+
+        char teste[6][30] = {};
+        int i = 0;
+        while (token != NULL)
         {
-            column = 0;
-            row++;
-
-            if (row == 1)
-                continue;
-            char *value = zstrtok(buffer, ", ");
-
-            while (value)
-            {
-                if (column == 0)
-                {
-                    printf("ID:");
-                }
-
-                if (column == 1)
-                {
-                    printf("\nName:");
-                }
-                if (column == 2)
-                {
-                    printf("\nForm:");
-                }
-
-                if (column == 4)
-                {
-                    printf("\nType 1:");
-                }
-                if (column == 5)
-                {
-                    printf("\nType 2:");
-                }
-                if (column == 6)
-                {
-                    printf("\nTotal:");
-                }
-                if (column == 7)
-                {
-                    printf("\nHP:");
-                }
-                if (column == 8)
-                {
-                    printf("\nAttack:");
-                }
-                if (column == 9)
-
-                    printf("\nDefense:");
-
-                if (column == 10)
-                {
-                    printf("\nSuper Attack:");
-                }
-                if (column == 11)
-                {
-                    printf("\nSuper Defense:");
-                }
-                if (column == 12)
-                {
-                    printf("\nSpeed:");
-                }
-                if (column == 13)
-                {
-                    printf("\nGeneration:");
-                }
-                printf("%s", value);
-                value = zstrtok(NULL, ", ");
-                column++;
-            }
-
-            printf("\n");
+            printf("Token: %s\n", token);
+            token = strtok(NULL, ",");
+            strcpy(teste[i][30], token);
+            i++;
         }
 
-        // Close the file
-        fclose(fp);
+        i = 0;
+        while (i != 4)
+        {
+            printf("\n%s\n", teste[i][30]);
+            i++;
+        }
     }
+    fclose(fp);
 }
+
+// char row[152];
+// char *token;
+// while (feof(fp) != 1)
+// {
+//     fgets(row, 152, fp);
+
+//     token = strtok(row, ",");
+
+//     while (token != NULL)
+//     {
+//         printf("Token: %s\n", token);
+//         token = strtok(NULL, ",");
+//     }
+// }
