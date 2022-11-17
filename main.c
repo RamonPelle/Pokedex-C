@@ -45,9 +45,10 @@ int main()
             printf("Quantidade: %d\n", size);
             break;
         case 7: // Imprime a altura da árvore
-            printf("\n%d\n", heightOfTree(pokedex));
+            printf("\nAltura da árvore: %d\n", heightOfTree(pokedex));
             break;
         case 8: // Imrpime a pokedex em estrutura de árvore
+            printf("Forma de árvore:\n");
             printAVL(pokedex, 0);
             printf("\n");
             break;
